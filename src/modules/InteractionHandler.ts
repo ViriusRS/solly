@@ -1,4 +1,4 @@
-import { readdirSync } from 'fs';
+import { Dirent, readdirSync } from 'fs';
 import { EmbedBuilder, Collection, Interaction } from 'discord.js';
 import Bot from '../Bot';
 import BotInteraction from '../types/BotInteraction';
@@ -22,22 +22,60 @@ export default class InteractionHandler extends EventEmitter {
         });
     }
 
+    // build() {
+    //     if (this.built) return this;
+    //     const directories = readdirSync(`${this.client.location}/src/interactions`, { withFileTypes: true });
+    //     for (const directory of directories) {
+    //         if (!directory.isDirectory()) continue;
+    //         const commands = readdirSync(`${this.client.location}/src/interactions/${directory.name}`, { withFileTypes: true });
+    //         for (const command of commands) {
+    //             if (!command.isFile()) continue;
+    //             if (!command.name.endsWith('.ts')) continue;
+    //             import(`${this.client.location}/src/interactions/${directory.name}/${command.name}`).then((interaction) => {
+    //                 const Command: BotInteraction = new interaction.default(this.client);
+    //                 Command.category = directory.name.charAt(0).toUpperCase() + directory.name.substring(1);
+    //                 this.commands.set(Command.name, Command);
+    //                 this.client.logger.log({ message: `Command '${Command.name}' loaded`, handler: this.constructor.name, uid: `(@${Command.uid})` }, false);
+    //             });
+    //         }
+    //     }
+    //     return this;
+    // }
     build() {
         if (this.built) return this;
-        const directories = readdirSync(`${this.client.location}/src/interactions`, { withFileTypes: true });
-        for (const directory of directories) {
-            if (!directory.isDirectory()) continue;
-            const commands = readdirSync(`${this.client.location}/src/interactions/${directory.name}`, { withFileTypes: true });
-            for (const command of commands) {
-                if (!command.isFile()) continue;
-                if (!command.name.endsWith('.ts')) continue;
-                import(`${this.client.location}/src/interactions/${directory.name}/${command.name}`).then((interaction) => {
-                    const Command: BotInteraction = new interaction.default(this.client);
-                    Command.category = directory.name.charAt(0).toUpperCase() + directory.name.substring(1);
-                    this.commands.set(Command.name, Command);
-                    this.client.logger.log({ message: `Command '${Command.name}' loaded`, handler: this.constructor.name, uid: `(@${Command.uid})` }, false);
-                });
-            }
+        const dirs = readdirSync(`${this.client.location}/src/interactions`, { withFileTypes: true });
+        const name = this.constructor.name;
+        const commands = this.commands;
+        const client = this.client;
+        let cmds: Dirent[] = [];
+
+        walk();
+
+        async function walk() {
+            if (!dirs.length) return;
+            cmds = readdirSync(`${client.location}/src/interactions/${dirs[0].name}`, { withFileTypes: true }).filter((file) => file.name.endsWith('.ts'));
+            await load(dirs[0].name);
+            (dirs as Dirent[]).shift();
+            walk();
+        }
+
+        async function load(dir: string) {
+            if (!cmds.length) return;
+            await actuallyLoad(dir, cmds[0]);
+            (cmds as Dirent[]).shift();
+            await load(dir);
+        }
+
+        async function actuallyLoad(dir: string, command: Dirent) {
+            return new Promise(async (resolve) => {
+                if (command.isFile()) {
+                    const interaction = await import(`${client.location}/src/interactions/${dir}/${command.name}`);
+                    const Command: BotInteraction = new interaction.default(client);
+                    commands.set(Command.name, Command);
+                    client.logger.log({ message: `Command '${Command.name}' loaded`, handler: name, uid: `(@${Command.uid})` }, false);
+                }
+                resolve(!0);
+            });
         }
         return this;
     }
@@ -88,10 +126,10 @@ export default class InteractionHandler extends EventEmitter {
                         break;
                     case 'TRIAL_TEAM':
                         const validRoleKeys = ['trialTeam', 'admin', 'owner'];
-                        const validRoleIds = validRoleKeys.map(key => this.client.util.utilities.functions.stripRole(this.client.util.utilities.roles[key]))
+                        const validRoleIds = validRoleKeys.map((key) => this.client.util.utilities.functions.stripRole(this.client.util.utilities.roles[key]));
                         const user = await interaction.guild.members.fetch(interaction.user.id);
-                        const userRoles = user.roles.cache.map(role => role.id);
-                        const intersection = validRoleIds.filter(roleId => userRoles.includes(roleId));
+                        const userRoles = user.roles.cache.map((role) => role.id);
+                        const intersection = validRoleIds.filter((roleId) => userRoles.includes(roleId));
                         if (intersection.length === 0) {
                             this.client.logger.log(
                                 {
