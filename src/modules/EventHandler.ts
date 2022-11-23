@@ -18,10 +18,10 @@ export default class EventHandler {
 
     build() {
         if (this.built) return this;
-        const events = readdirSync(this.client.location + '/dist/src/events');
+        const events = readdirSync(this.client.location + '/src/events');
         for (let event of events) {
-            if (event.endsWith('.js')) {
-                import(`${this.client.location}/dist/src/events/${event}`).then((event) => {
+            if (event.endsWith('.ts')) {
+                import(`${this.client.location}/src/events/${event}`).then((event) => {
                     const botEvent: BotEvent = new event.default(this.client);
                     this.client.logger.log({ message: `Event '${botEvent.name}' loaded.`, handler: this.constructor.name, uid: `(@${botEvent.uid})` }, false);
                     if (botEvent.enabled) {

@@ -24,14 +24,14 @@ export default class InteractionHandler extends EventEmitter {
 
     build() {
         if (this.built) return this;
-        const directories = readdirSync(`${this.client.location}/dist/src/interactions`, { withFileTypes: true });
+        const directories = readdirSync(`${this.client.location}/src/interactions`, { withFileTypes: true });
         for (const directory of directories) {
             if (!directory.isDirectory()) continue;
-            const commands = readdirSync(`${this.client.location}/dist/src/interactions/${directory.name}`, { withFileTypes: true });
+            const commands = readdirSync(`${this.client.location}/src/interactions/${directory.name}`, { withFileTypes: true });
             for (const command of commands) {
                 if (!command.isFile()) continue;
-                if (!command.name.endsWith('.js')) continue;
-                import(`${this.client.location}/dist/src/interactions/${directory.name}/${command.name}`).then((interaction) => {
+                if (!command.name.endsWith('.ts')) continue;
+                import(`${this.client.location}/src/interactions/${directory.name}/${command.name}`).then((interaction) => {
                     const Command: BotInteraction = new interaction.default(this.client);
                     Command.category = directory.name.charAt(0).toUpperCase() + directory.name.substring(1);
                     this.commands.set(Command.name, Command);
