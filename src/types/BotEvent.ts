@@ -2,7 +2,7 @@ import EventEmitter = require('events');
 import Bot from '../Bot';
 import * as uuid from 'uuid';
 export default interface BotEvent {
-    new (client: Bot): BotEvent;
+    new(client: Bot): BotEvent;
     uid: string;
     client: Bot;
     get name(): string;

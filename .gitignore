@@ -20,3 +20,4 @@ dist/
 *.pub
 copy.sh
 connect.sh
+ssh.ppk

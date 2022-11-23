@@ -5,7 +5,7 @@ import * as uuid from 'uuid';
 import Bot from '../Bot';
 
 export default interface BotInteraction {
-    new (client: Bot): BotInteraction;
+    new(client: Bot): BotInteraction;
     uid: string;
     client: Bot;
     category: string;
