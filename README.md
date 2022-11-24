@@ -1,10 +1,12 @@
-# Nex AoD FC Utility Bot
-A project for Nex AoD FC staff.
+# Solak Utility Bot
+A project for Solak Discord staff.
+
+<a href="https://discord.gg/solak"><img src="https://discordapp.com/api/guilds/429001600523042818/widget.png?style=banner2" alt="Discord invite"></a>
 
 # Installation / Running the Bot
 
 1. `npm install`
-2. Request a configuration file from any `@Bot Developer`.
+2. Request a configuration file from any `@Bot Dev`.
 3. Set your development TOKEN variable in `.env`.
 4. Set your environment ENVIRONMENT variable in `.env`.
 
