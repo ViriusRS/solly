@@ -1,5 +1,7 @@
 import 'dotenv/config';
 
+import { Categories } from './types/UtilTypes';
+
 const environment = process.env.ENVIRONMENT === 'PRODUCTION' ? 'PRODUCTION' : 'DEVELOPMENT';
 
 export const Colours = {
@@ -346,6 +348,24 @@ const rolePrereqisites: any = {
     }
 }
 
+const categories: Categories = {
+    killCount: ['solakRookie', 'solakCasual', 'solakEnthusiast', 'solakAddict', 'unlockedPerdita', 'solakFanatic', 'solakSlave', 'solakSimp', 'solakLegend'],
+    collectionLog: [''],
+    matchmaking: {
+        threeSeven: ['noRealm', 'threeSevenRootskips', 'threeSevenExperienced', 'threeSevenMaster', 'threeSevenGrandmaster'],
+        duo: ['duoRootskips', 'duoExperienced', 'duoMaster', 'duoGrandmaster'],
+        combined: ['rootskips', 'experienced', 'master', 'grandmaster']
+    }
+}
+
+const heirarchy: any = {
+    killCount: categories.killCount,
+    collectionLog: [''],
+    threeSeven: ['noRealm', 'threeSevenRootskips', 'rootskips', 'threeSevenExperienced', 'experienced', 'threeSevenMaster', 'master', 'threeSevenGrandmaster', 'grandmaster'],
+    duo: ['duoRootskips', 'rootskips', 'duoExperienced', 'experienced', 'duoMaster', 'master', 'duoGrandmaster', 'grandmaster'],
+    combined: categories.matchmaking.combined
+}
+
 const removeHeirarchy: any = {
     'threeSevenRootskips': ['noRealm'],
     'duoExperienced': ['duoRootskips'],
@@ -372,12 +392,26 @@ const stripRole = (role: string) => {
     return role.slice(3, -1)
 }
 
-const categorize = (role: string) => {
-    const roleCategories: any = {
-        kc: ['solakRookie', 'solakCasual', 'solakEnthusiast', 'solakAddict', 'unlockedPerdita', 'solakFanatic', 'solakSlave', 'solakSimp', 'solakLegend'],
-        collectionLog: []
+const categorize = (role: string): string => {
+    let category = '';
+    if (categories.killCount.includes(role)) {
+        category = 'killCount';
+    } else if (categories.collectionLog.includes(role)) {
+        category = 'collectionLog';
+    } else if (categories.matchmaking.threeSeven.includes(role)) {
+        category = 'threeSeven';
+    } else if (categories.matchmaking.duo.includes(role)) {
+        category = 'duo';
+    } else if (categories.matchmaking.combined.includes(role)) {
+        category = 'combined';
+    } else {
+        category = ''
     }
-    if (roleCategories.kc.includes(role) || roleCategories.collectionLog.includes(role)) {
+    return category;
+}
+
+const categorizeChannel = (role: string) => {
+    if (categories.killCount.includes(role) || categories.collectionLog.includes(role)) {
         return 'achievementsAndLogs'
     } else {
         return 'roleConfirmations'
@@ -413,9 +447,11 @@ const Utilities = {
     channels: environment === 'PRODUCTION' ? ProdChannels : DevChannels,
     rolePrereqisites,
     removeHeirarchy,
+    heirarchy,
     assignOptions,
     functions: {
         stripRole,
+        categorizeChannel,
         categorize
     }
 }
