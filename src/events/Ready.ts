@@ -15,14 +15,14 @@ export default class Ready extends BotEvent {
     }
 
     private get statuses(): string[] {
-        return ['Apply to trial today!', 'Get started in #trial-guide!'];
+        return ['Apply to trial today!'];
     }
 
     async run(client: Bot) {
         this.client.logger.log({ message: `[${this.client.user?.username}] Ready! Serving ${this.client.guilds.cache.size} guild(s) with ${this.client.users.cache.size} user(s)` }, true);
         this.client.logger.log({ message: `Running on the ${process.env.ENVIRONMENT} environment` }, true);
         this.client.user?.setPresence({
-            activities: [{ name: `you kill Nex!`, type: ActivityType.Watching }]
+            activities: [{ name: `you kill Solak!`, type: ActivityType.Watching }]
         });
         setInterval((): void => {
             const current = this.statuses.shift() ?? '';
