@@ -4,9 +4,9 @@
     "description": "A bot made to help Solak Administration",
     "scripts": {
         "build": "tsc --watch",
-        "dev": "ts-node index.ts",
+        "start": "ts-node index.ts",
         "prestart": "tsc",
-        "start": "node ./dist/index.js"
+        "start-js": "node ./dist/index.js"
     },
     "author": "Fate",
     "license": "MIT",
